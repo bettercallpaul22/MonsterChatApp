@@ -47,7 +47,6 @@ class FirebaseHelper{
     
     func downloadImage(firebaseImageUrl: String, fileName:String) -> Future<UIImage?, Error> {
         let fileNameUrl = firebaseImageUrl + "\(fileName)" + ".jpg"
-        print("filename to get img from fb", fileNameUrl)
 
      let image = Storage.storage().reference(forURL: mStorage_BaseUrl).child(fileNameUrl)
         return Future { promise in

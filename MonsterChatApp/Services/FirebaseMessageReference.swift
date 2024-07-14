@@ -55,7 +55,7 @@ class FirebaseMessageReference {
                 documents.forEach { doc in
                     // update status in the doc ["status":"read"]
                     do {
-                        var messageDoc = try doc.data(as: RealmLocalMessage.self)
+                        let messageDoc = try doc.data(as: RealmLocalMessage.self)
                         messageDoc.status = "read" // Update the status to "read"
                         
                         // Update the document in Firestore
@@ -74,30 +74,30 @@ class FirebaseMessageReference {
 
         }
         
-        firebaseReference(.Messages).document("CKOhDdXzhycP7JMi0lmsVWb2ODo2").collection(message.chatRoomId).getDocuments { documentSnapshot, error in
-            guard let documents = documentSnapshot?.documents else{
-                return
-            }
-            
-            documents.forEach { doc in
-                // update status in the doc ["status":"read"]
-                do {
-                    var messageDoc = try doc.data(as: RealmLocalMessage.self)
-                    messageDoc.status = "read" // Update the status to "read"
-                    
-                    // Update the document in Firestore
-                    self.firebaseReference(.Messages).document("CKOhDdXzhycP7JMi0lmsVWb2ODo2").collection(message.chatRoomId).document(doc.documentID).updateData(["status":"read"]) { error in
-                        if let error = error {
-                            print("Error updating document: \(error)")
-                        } else {
-                            print("Document successfully updated")
-                        }
-                    }
-                } catch {
-                    print("Error getting messageDoc", error)
-                }
-            }
-        }
+//        firebaseReference(.Messages).document("CKOhDdXzhycP7JMi0lmsVWb2ODo2").collection(message.chatRoomId).getDocuments { documentSnapshot, error in
+//            guard let documents = documentSnapshot?.documents else{
+//                return
+//            }
+//            
+//            documents.forEach { doc in
+//                // update status in the doc ["status":"read"]
+//                do {
+//                    var messageDoc = try doc.data(as: RealmLocalMessage.self)
+//                    messageDoc.status = "read" // Update the status to "read"
+//                    
+//                    // Update the document in Firestore
+//                    self.firebaseReference(.Messages).document("CKOhDdXzhycP7JMi0lmsVWb2ODo2").collection(message.chatRoomId).document(doc.documentID).updateData(["status":"read"]) { error in
+//                        if let error = error {
+//                            print("Error updating document: \(error)")
+//                        } else {
+//                            print("Document successfully updated")
+//                        }
+//                    }
+//                } catch {
+//                    print("Error getting messageDoc", error)
+//                }
+//            }
+//        }
         
         //          membersId.forEach { userId in
         //              let messageCollection = firebaseReference(.Messages).document(userId).collection(message.chatRoomId)
