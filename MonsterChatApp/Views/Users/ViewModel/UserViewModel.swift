@@ -13,7 +13,7 @@ class UserViewModel: ObservableObject {
     static var instance = UserViewModel()
     @Published  var username = ""
     @Published  var userStatus = ""
-    @Published  var userAvatar: UIImage? = nil
+    @Published  var avatar: UIImage? = nil
     @Published  var isLoading:Bool = false
     @Published var users: [User] = [] // Published array of users to update the view when it changes
     
@@ -32,26 +32,34 @@ class UserViewModel: ObservableObject {
         setAvatar(avatarLink: user.avatarLink, user: user)
     }
     
-    private func setAvatar(avatarLink: String, user: User) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0){
+     func setAvatar(avatarLink: String, user: User) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0){ [self] in
             
             if !user.id.isEmpty || !user.avatarLink.isEmpty{
-                FirebaseUserReference.instance.checkAndWriteNSDataToFile(filename: user.id, avatarUrl: user.avatarLink) { image in
-                    if image != nil{
-                        self.userAvatar = image
-                    }else{
-                        self.userAvatar = UIImage(named: "userimage")
-                    }
-
-                }
-      
-            }else{
-                self.userAvatar = UIImage(named: "userimage")                    }
+                LocalFileManager.instance.readAnWriteImage(fileName: user.id, firebaseImageUrlPath: .avatar)
+                    .sink { completion in
+                        switch completion{
+                        case.failure(let error):
+                            print("userViewModel getting image error : ", error.localizedDescription)
+                        case .finished:
+                            break
+                        }
+                    } receiveValue: { [weak self] image in
+                        self?.avatar = image
+                    }.store(in: &cancellables)
+                
+                
+            }
+            
         }
+        
+        
+    
         
     }
     
-
+    
+    
     func fetchUsers() {
         self.isLoading = true
         // Fetch users using the FirestoreService

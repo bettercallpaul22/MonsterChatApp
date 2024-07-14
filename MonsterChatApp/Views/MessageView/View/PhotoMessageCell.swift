@@ -7,12 +7,20 @@
 
 import SwiftUI
 
+
 struct PhotoMessageCell: View {
+    let message: RealmLocalMessage
+    let senderType: SenderType
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        if senderType == .receiver{
+           PhotoMessageLeft(message: message)
+        }else{
+            PhotoMessageRight(message: message)
+
+        }
     }
 }
 
-#Preview {
-    PhotoMessageCell()
-}
+//#Preview {
+//    PhotoMessageCell()
+//}

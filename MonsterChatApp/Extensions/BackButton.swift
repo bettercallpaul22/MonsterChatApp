@@ -14,7 +14,7 @@ extension View {
             ToolbarItem(placement: .navigationBarLeading) {
                 Button(action: {
                     if removeLast{
-                        NavigationManager.shared.path.removeLast()
+//                        NavigationManager.shared.path.removeLast()
 
                     }
                 }) {

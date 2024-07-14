@@ -10,6 +10,7 @@ import Firebase
 import FirebaseAuth
 import Combine
 
+@MainActor
 class SignUpViewModel:ObservableObject{
     @Published var email:String = ""
     @Published var password:String = ""
@@ -57,7 +58,7 @@ class SignUpViewModel:ObservableObject{
             return
         }
         subscription()
-        try await AuthServices.instance.register()
+        try await AuthServices.instance.register(email: email, password: password)
     }
     
     

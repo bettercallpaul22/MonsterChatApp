@@ -31,7 +31,7 @@ class RealmManager:ObservableObject {
     func deleteFromRealm<T: Object>(_ object: T) {
         do {
             let realm = try Realm()
-            try realm.write {
+            try! realm.write {
                 realm.delete(object)
             }
         } catch {

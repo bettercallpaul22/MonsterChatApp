@@ -13,21 +13,8 @@ struct UserCell: View {
     var body: some View {
         HStack(alignment:.top){
             VStack{
-                if userViewModel.userAvatar != nil {
-                    Image(uiImage: userViewModel.userAvatar!)
-                        .resizable()
-                        .frame(width: 50, height: 50)
-                        .clipShape(Circle())
-                        .overlay(Circle().stroke(Color.white, lineWidth: 4))
-                }else{
-                    Image("userimage")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 50, height: 50)
-                        .clipShape(Circle())
-                        .overlay(Circle().stroke(Color.white, lineWidth: 4))
-                        .shadow(radius: 5)
-                }
+                CircularImage(image: userViewModel.avatar, size: .small)
+
             }
             VStack(alignment:.leading){
                 Text(user.username)

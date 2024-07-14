@@ -30,24 +30,8 @@ struct SettingsView: View {
                 Section {
                     NavigationLink(destination: EditProfile()) {
                         HStack(alignment:.top){
-                            if settingsViewModel.avatarImage2 != nil {
-                                Image(uiImage: settingsViewModel.avatarImage2!)
-                                    .resizable()
-                                    .frame(width: 50, height: 50)
-                                    .clipShape(Circle())
-                                    .overlay(Circle().stroke(Color.white, lineWidth: 4))
-                                    .shadow(radius: 10)
-                            }else{
-                                Image(systemName: "person.crop.circle")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 50, height: 50)
-                                    .clipShape(Circle())
-                                    .overlay(Circle().stroke(Color.white, lineWidth: 4))
-                                    .shadow(radius: 10)
-                            }
-                            
-                            
+                            CircularImage(image: settingsViewModel.avatar, size: .small)
+
                             VStack(alignment: .leading, spacing: 10){
                                 
                                 Text(settingsViewModel.user?.username ?? "")

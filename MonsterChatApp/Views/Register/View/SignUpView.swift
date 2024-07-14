@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import RiveRuntime
+
 
 struct SignUpView: View {
     @StateObject var signUpViewModel:SignUpViewModel = SignUpViewModel()
@@ -128,7 +128,6 @@ struct SignUpView: View {
                      
                     }
                 }
-                .navigationBarBackButtonHidden()
                 .navigationDestination(isPresented: $signUpViewModel.isSuccess, destination: {
                     SignInView()
                 })

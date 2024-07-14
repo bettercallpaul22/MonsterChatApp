@@ -35,6 +35,24 @@ public enum FireBaseRefEnum:String{
     case User
     case Recent
     case Messages
+    case Typing
+    case MessageViewListener
+}
+
+public enum UserViewState:String{
+   case online
+   case inMessageView
+    case offline
+}
+
+public enum SenderType{
+    case sender
+    case receiver
+}
+
+public enum FireBaseImageUrlPath:String{
+    case avatar = "Avatars/"
+    case photoMessage = "Media/Photos/"
 }
 
 
@@ -43,8 +61,8 @@ public let AvatarPhotoDirectory = Storage.storage().reference(forURL: mStorage_B
 public let MessagePhotoDirectory = Storage.storage().reference(forURL: mStorage_BaseUrl)
 
 
-public let mStorage_BaseUrl = "gs://monsterchat-e6414.appspot.com"
-public let mFirebaseImageDirectory = "Avatars/" + "_\(User.currentUserId)" + ".jpg"
+public let mStorage_BaseUrl = "gs://monsterchatapp.appspot.com"
+public let mFirebaseImageDirectory = "Avatars/" + "_\(String(describing: User.currentUserId))" + ".jpg"
 public let  AvatarDirectory = Storage.storage().reference(forURL: mStorage_BaseUrl).child(mFirebaseImageDirectory)
 
 

@@ -49,8 +49,8 @@ class AuthServices:ObservableObject{
                 }
     
     
-    func register() async throws{
-    
+    func register(email:String, password:String) async throws{
+        print("Auth session    -> password: \(password)   email: \(email)")
         isLoading = true
         do{
          let response = try await Auth.auth().createUser(withEmail: email, password: password)

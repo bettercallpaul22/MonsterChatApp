@@ -6,13 +6,12 @@
 //
 
 import SwiftUI
-import RiveRuntime
+
 
 struct ContentView: View {
     @StateObject var contentModel = ContentViewModel()
-    @AppStorage("selectedTab")  var selectedTab:Tab = .chat
     @State var isOpen:Bool = false
-    let button = RiveViewModel(fileName: "menu", stateMachineName: "State Machine", autoPlay: false)
+ 
 
     var body: some View {
         Group{

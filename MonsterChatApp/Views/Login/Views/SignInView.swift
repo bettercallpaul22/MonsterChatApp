@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import RiveRuntime
+
 
 struct SignInView: View {
     @StateObject var loginViewModel:SignInViewModel = SignInViewModel()
@@ -134,6 +134,7 @@ struct SignInView: View {
                         .padding()
             )
             }.background(.regularMaterial)
+                .toolbar(.hidden, for: .tabBar)
             
         }
         

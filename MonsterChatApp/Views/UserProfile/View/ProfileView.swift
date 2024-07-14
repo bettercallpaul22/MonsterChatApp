@@ -20,8 +20,8 @@ struct ProfileView: View {
         Form{
             VStack{
                 HStack{
-                    if userViewModel.userAvatar != nil{
-                        Image(uiImage: userViewModel.userAvatar!)
+                    if userViewModel.avatar != nil{
+                        Image(uiImage: userViewModel.avatar!)
                             .resizable()
                             .scaledToFill()
                             .frame(width: 100, height: 100)
@@ -47,6 +47,7 @@ struct ProfileView: View {
                     .font(.title3)
                     .foregroundStyle(Color(.systemGray))
             }
+            .toolbar(.hidden, for: .tabBar)
             .frame(minWidth: 300)
             .padding()
             
@@ -56,7 +57,7 @@ struct ProfileView: View {
                 destination:
                     MessageView(
                         membersId_: [user.id, User.currentUserId! as String],
-                        chatRoomId_: chatViewModel.getChatRoomID(userID_1: user.id, userID_2:User.currentUserId! as String), username: user.username)) {
+                        chatRoomId_: chatViewModel.getChatRoomID(userID_1: user.id, userID_2:User.currentUserId! as String), username: user.username, chatId: nil)) {
                             HStack{
                                 Text("Start Chat")
                                 Image(systemName: "ellipsis.message.fill")

@@ -75,8 +75,6 @@ struct StatusView: View {
             
             
         }.navigationTitle("Status Update")
-            .addBackButton(removeLast: true)
-            .navigationBarBackButtonHidden()
             .onAppear(perform: {
 //                userService.fetchUser()
             })

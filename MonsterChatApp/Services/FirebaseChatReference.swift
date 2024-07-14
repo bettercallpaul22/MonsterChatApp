@@ -16,7 +16,7 @@ class FirebaseChatReference{
     
     init(){}
     
-     func firebaseRefrence(_ collectionRefrence:FireBaseRefEnum) -> CollectionReference{
+    func firebaseRefrence(_ collectionRefrence:FireBaseRefEnum) -> CollectionReference{
         return Firestore.firestore().collection(collectionRefrence.rawValue)
     }
     
@@ -33,7 +33,7 @@ class FirebaseChatReference{
         }
     }
     
- 
+    
     func getChats() -> AnyPublisher<[Chat], Error> {
         
         let subject = PassthroughSubject<[Chat], Error>()
@@ -60,7 +60,7 @@ class FirebaseChatReference{
                         try document.data(as: Chat.self)
                     }
                     subject.send(chats)
-                  
+                    
                 } catch {
                     subject.send(completion: .failure(error))
                 }
@@ -77,7 +77,68 @@ class FirebaseChatReference{
     
     
     
+    
+    func updateRecent(recentChat:Chat, recentId:String){
+    
+        do{
+           try firebaseRefrence(.Recent).document(recentId).setData(from: recentChat)
 
+        }catch{
+            print("error saving recent :", error.localizedDescription)
+        }
+    }
+    
+//    func updateRecent(recent:Chat, chatRoomId:String) {
+//        self.firebaseRefrence(.Recent).whereField(mChatRoomId, isEqualTo: chatRoomId)
+//            .getDocuments { snapshotDocument, error in
+//                if let error = error {
+//                    print("getting doc error: ", error.localizedDescription)
+//                }
+//                guard let documents = snapshotDocument?.documents else {
+//                    print("no document for recent chat")
+//                    return
+//                }
+//                print("Recent chat details doc", documents)
+//                let chats = documents.compactMap { doc -> Chat? in
+//                    do {
+////                        let data = try JSONSerialization.data(withJSONObject: doc.data(), options: [])
+//                        let chat = try JSONDecoder().decode(Chat.self, from: doc.data())
+////                        return chat
+//                    } catch {
+//                        print("Error decoding chat: \(error.localizedDescription)")
+//                        return nil
+//                    }
+//                }
+//                
+//                // Now you have an array of Chat objects
+//                print("Chats: ", chats)
+//                //
+//                //                    let allRecents = documents.compactMap { (queryDocumentSnapshot) -> Chat?  in
+//                //                        return try? queryDocumentSnapshot.data(as: Chat.self)
+//                //                    }
+//                //
+//                //                    do{
+//                //                        try  allRecents.forEach { recentObject in
+//                //                            try self.firebaseRefrence(.Recent).document(recent.id).setData(from:recent)
+//                //                        }
+//                //                        print("Recent chat updated success")
+//                //
+//                //                    }catch{
+//                //                        print("Error saving Recent chat")
+//                //                    }
+//                
+//                
+//                
+//                
+//            }
+//        
+//        
+//        
+//    }
+//    
+//    
+    
+    
     func deleteChat(chat: Chat) -> AnyPublisher<Bool, Error> {
         Future<Bool, Error> { promise in
             self.firebaseRefrence(.Recent).document(chat.id).delete { error in
@@ -92,4 +153,4 @@ class FirebaseChatReference{
     }
 }
 
-    
+

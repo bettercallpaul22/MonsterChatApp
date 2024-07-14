@@ -10,6 +10,7 @@ import SwiftUI
 
 struct PhotoPicker:UIViewControllerRepresentable{
     @Binding var Image:UIImage?
+    var completion: (() -> Void)?
     func makeUIViewController(context: Context) -> UIImagePickerController {
         let picker = UIImagePickerController()
         picker.delegate = context.coordinator
@@ -31,7 +32,7 @@ struct PhotoPicker:UIViewControllerRepresentable{
     
     
     // This trggered when an image is picked
-   
+    
     final class Coordinator:NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate{
         let photoPicker:PhotoPicker
         init(photoPicker:PhotoPicker) {
@@ -42,7 +43,9 @@ struct PhotoPicker:UIViewControllerRepresentable{
             if let image = info[.editedImage] as? UIImage{
                 photoPicker.Image = image
             }else{}
-            picker.dismiss(animated: true)
+            picker.dismiss(animated: true) {
+                self.photoPicker.completion?()
+            }
         }
     }
     
@@ -52,6 +55,6 @@ struct PhotoPicker:UIViewControllerRepresentable{
     
     
     
-  
-        
+    
+    
 }

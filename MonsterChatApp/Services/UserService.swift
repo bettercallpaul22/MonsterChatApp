@@ -15,7 +15,7 @@ import Combine
 class UserService:ObservableObject{
     static var instance = UserService()
     @Published var user:User? = nil
-    @Published var avatarImage:UIImage? = nil
+    @Published var avatar:UIImage? = nil
     @Published var appVersion:String = ""
     @Published var isLoading:Bool = false
     @Published var errorMessage:String = ""
@@ -32,47 +32,65 @@ class UserService:ObservableObject{
         }
     }
     
-    // look into fetch user
-    func fetchUserAvatar(){
-        if let user = User.currentUser {
-            self.user = user
-            if user.avatarLink != "" {
-                FirebaseUserReference.instance.checkAndWriteNSDataToFile(filename:user.id, avatarUrl: user.avatarLink){image in
-                    if image != nil{
-                        self.avatarImage = image
-                    }else{
-                        self.avatarImage = nil
-                        
-                    }
-                }
-                
-            }
-            
-        }
-    }
     
     
-    
-    func updateAvatar(avatar:UIImage){
-        self.isLoading = true
-        FirebaseUserReference.instance.uploadImage(image: avatar, directory: mFirebaseImageDirectory)
-            .receive(on: DispatchQueue.main)
-            .sink(receiveCompletion: { completion in
+    func getAvatar(_ fileName:String, directory:FireBaseImageUrlPath){
+  isLoading = true
+        LocalFileManager.instance.readAnWriteImage(fileName: fileName, firebaseImageUrlPath: directory.self)
+            .sink { (completion) in
                 switch completion{
-                case.failure(let error):
-                    print(error.localizedDescription)
-                case.finished:
-                    print("Image uplaod completed")
-                    
+                case .failure(let error):
+                    print("get image error:",error.localizedDescription)
+                case .finished:
+                    break
                 }
-            }, receiveValue: { url in
-                
-            })
-            .store(in: &self.cancellables)
-        
+            } receiveValue: { image in
+                self.avatar = image
+            }.store(in: &self.cancellables)
     }
     
+    // look into fetch user
+//    func fetchUserAvatar(){
+//        if let user = User.currentUser {
+//            self.user = user
+//            if user.avatarLink != "" {
+//                FirebaseUserReference.instance.checkAndWriteNSDataToFile(filename:user.id, avatarUrl: user.avatarLink){image in
+//                    if image != nil{
+//                        self.avatarImage = image
+//                    }else{
+//                        self.avatarImage = nil
+//                        
+//                    }
+//                }
+//                
+//            }
+//            
+//        }
+//    }
+//    
+//    
     
+//    func updateAvatar(avatar:UIImage){
+//        guard let userId = User.currentUserId else {return}
+//        self.isLoading = true
+//        FirebaseUserReference.instance.uploadImage(image: avatar, directory: mFirebaseImageDirectory, fileName:userId)
+//            .receive(on: DispatchQueue.main)
+//            .sink(receiveCompletion: { completion in
+//                switch completion{
+//                case.failure(let error):
+//                    print(error.localizedDescription)
+//                case.finished:
+//                    print("Image uplaod completed")
+//                    
+//                }
+//            }, receiveValue: { url in
+//                
+//            })
+//            .store(in: &self.cancellables)
+//        
+//    }
+//    
+//    
     
   
     func updateStatus(_ status:String){

@@ -27,21 +27,7 @@ struct ChatCellView: View {
     var body: some View {
         HStack(alignment:.top){
             VStack{
-                if chatViewModel.userAvatar != nil {
-                    Image(uiImage: chatViewModel.userAvatar!)
-                        .resizable()
-                        .frame(width: 60, height: 60)
-                        .clipShape(Circle())
-                        .overlay(Circle().stroke(Color.white, lineWidth: 4))
-                }else{
-                    Image("profile")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 60, height: 60)
-                        .clipShape(Circle())
-                        .overlay(Circle().stroke(Color.white, lineWidth: 4))
-                        .shadow(radius: 5)
-                }
+                CircularImage(image: chatViewModel.avatar, size: .small)
             }
             VStack{
                 HStack(){
@@ -57,7 +43,7 @@ struct ChatCellView: View {
                 }.padding(.leading, 10)
                 
                 HStack(){
-                Text(lastMessageObject?.lastMessage ?? "")
+                    Text(chat.lastMessage)
                         .font(.subheadline)
                         .foregroundStyle(Color(.systemGray))
                     Spacer()
@@ -85,9 +71,9 @@ struct ChatCellView: View {
     }
 }
 
-#Preview {
-    ChatCellView(chat: Chat(id: "yyeuhej", chatRoomId: "jdhjdeh", senderId: "jdhjhheh", senderName: "obaro paul", receiverId: "98ueyhbe", receiverName: "blessing", date: Date(), memberId: ["0ihdw"], lastMessage: "hello dear", unreadCounter: 0, avatarLink: "ioudghbjdhds"))
-}
+//#Preview {
+//    ChatCellView(chat: Chat(id: "yyeuhej", chatRoomId: "jdhjdeh", senderId: "jdhjhheh", senderName: "obaro paul", receiverId: "98ueyhbe", receiverName: "blessing", date: Date(), memberId: ["0ihdw"], lastMessage: "hello dear", unreadCounter: 0, avatarLink: "ioudghbjdhds"))
+//}
 
 
 

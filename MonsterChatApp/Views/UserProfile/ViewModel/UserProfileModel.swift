@@ -34,12 +34,18 @@ class UserProfileViewModel:ObservableObject{
             guard let user = User.currentUser else {return}
             if !user.id.isEmpty && !user.avatarLink.isEmpty{
                 self.user = user
-                let fileURL = LocalFileManager.instance.fileInDocumentDirectory(filename: user.id + ".jpg")
-                
-                LocalFileManager.instance.getImageFromLocalStrorage(imagePathUrl: fileURL) { image in
-                    guard let imagefile = image else{return}
-                    self.avatarImage = imagefile
-                }
+                LocalFileManager.instance.getImageFromLocalStorage(user.id)
+                    .sink { (completion) in
+                        switch completion{
+                        case .failure(let error):
+                            print(error.localizedDescription)
+                        case .finished:
+                            print("get image from localStorage success completed")
+                        }
+                    } receiveValue: { image in
+                        self.avatarImage = image
+                    }.store(in: &self.cancellable)
+
             }
             
             

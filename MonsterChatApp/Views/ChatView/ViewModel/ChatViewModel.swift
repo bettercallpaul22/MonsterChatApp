@@ -5,9 +5,10 @@ import SwiftUI
 
 class ChatViewModel:ObservableObject {
     @Published var chats:[Chat] = []
-    @Published var userAvatar:UIImage? = nil
+    @Published var avatar:UIImage? = nil
     @Published  var isLoading:Bool = false
-   
+    @Published var userMessageViewState:String = ""
+
     
     var cancellables = Set<AnyCancellable>()
     
@@ -18,20 +19,22 @@ class ChatViewModel:ObservableObject {
     
     
     func setAvatar(avatarLink: String, userId: String) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0){
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0){ [self] in
             
             if !userId.isEmpty || !avatarLink.isEmpty{
-                FirebaseUserReference.instance.checkAndWriteNSDataToFile(filename: userId, avatarUrl: avatarLink) { image in
-                    if image != nil{
-                        self.userAvatar = image
-                    }else{
-                        self.userAvatar = UIImage(named: "userimage")
-                    }
-                }
+                                LocalFileManager.instance.readAnWriteImage(fileName:userId, firebaseImageUrlPath: .avatar)
+                    .sink { completion in
+                        switch completion{
+                        case.failure(let error):
+                            print("userViewModel getting image error : ", error.localizedDescription)
+                        case .finished:
+                            break
+                        }
+                    } receiveValue: { [weak self] image in
+                        self?.avatar = image
+                    }.store(in: &cancellables)
+
                 
-            }else{
-                self.userAvatar = UIImage(named: "userimage")
-                print("usernot logged in")                 
             }
         }
         
@@ -39,7 +42,7 @@ class ChatViewModel:ObservableObject {
     
     
     func getChats (){ 
-        print("getting chats....")
+//        print("getting chats....")
         guard User.currentUser != nil else{
             return
         }
@@ -72,6 +75,27 @@ class ChatViewModel:ObservableObject {
                 self?.isLoading = false
             })
             .store(in: &cancellables)
+    }
+    
+    
+    func updateChatViewState(state:String, chatRoomId:String){
+        FirebaseMessageReference.instance.updateMessageViewState(isOnViewState: state, chatroomId: chatRoomId)
+    }
+    
+    func messageViewListener(_ chatRoomId:String){
+        FirebaseMessageReference.instance.messageViewListener(chatRoomId)
+            .sink { completion in
+                switch completion{
+                
+                case .finished:
+                   break
+                case .failure(let error):
+                    print("error listening to user messageview state", error)
+                }
+            } receiveValue: { [weak self] val in
+//                self?.userMessageViewState = val
+            }.store(in: &cancellables)
+
     }
     
     

@@ -1,16 +1,18 @@
 import SwiftUI
 
-struct PhotoMessageLeft: View {
+struct PhotoMessageRight: View {
     @StateObject var messageViewModel: MessageViewModel = MessageViewModel()
+    @StateObject var userService: UserService = UserService()
+
     let message: RealmLocalMessage
-    let senderType: SenderType
     
     var body: some View {
         
         
         HStack(alignment:.top){
-            CircularImage(image: messageViewModel.avatar, size: .extraSmall)
-            VStack(alignment:.trailing){
+            Spacer()
+
+            VStack(alignment:.leading){
             ZStack {
                 
                 VStack(alignment: .leading) {
@@ -27,7 +29,7 @@ struct PhotoMessageLeft: View {
                                 }
                             
                         } else {
-                            Image(systemName: "person.circle.fill")
+                            Image(systemName: "photo")
                                 .resizable()
                                 .scaledToFit()
                                 .customConerRadius(10, corners: [ .topLeft])
@@ -45,24 +47,26 @@ struct PhotoMessageLeft: View {
             }
             .frame(maxWidth: 200)
             .padding(4)
-            .background(Color.fromHex(senderType == .receiver ? "F77D8E": "89CFF0").opacity(0.5))
+            .background(Color.fromHex("F77D8E").opacity(0.5))
             //        .customConerRadius(24, corners: [ .topLeft])
             .customConerRadius(3, corners: [ .bottomLeft, .bottomRight])
-            .onAppear {
-                messageViewModel.getImage("\(message.messageId)_\(message.senderId)", directory: .photoMessage)
-                messageViewModel.getImage(message.senderId, directory: .avatar)
-                
-            }
-                Text(customFormatter.fDate(message.date))
-                    .font(.caption)
-                    .foregroundColor(.gray)
-                Image(systemName: "checkmark.circle")
-
+            
+                HStack{
+                    Text(customFormatter.fDate(message.date))
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                    Image(systemName: "checkmark.circle")
+                }
         }
             
-            Spacer()
-            
+            CircularImage(image: userService.avatar, size: .extraSmall)
+
         }.frame(maxWidth: .infinity)
+            .onAppear {
+                messageViewModel.getImage("\(message.messageId)_\(message.senderId)", directory: .photoMessage)
+                userService.getAvatar(message.senderId, directory: .avatar)
+
+            }
           
         
         

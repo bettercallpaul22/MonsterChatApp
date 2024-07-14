@@ -7,12 +7,15 @@
 
 import Foundation
 import SwiftUI
+import Combine
+import FirebaseStorage
 
 // Singleton class to manage local file operations
 class LocalFileManager {
     
     static let instance = LocalFileManager()
-   
+    private var cancellables = Set<AnyCancellable>()
+
     func getDocumentDirectory() -> URL? {
         return FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
     }
@@ -24,66 +27,92 @@ class LocalFileManager {
     
     
     func fileExistingAtPath(path:String) -> Bool{
-    let filePath = fileInDocumentDirectory(filename: path) // MonsterChat + img.jpg
+        let filePath = fileInDocumentDirectory(filename: path) // MonsterChat + img.jpg
         
         // check is this path exist : // MonsterChat + img.jpg
         return FileManager.default.fileExists(atPath: filePath)
     }
     
     
-    func getImageFromLocalStrorage(imagePathUrl:String , completion:@escaping(_ image:UIImage?)-> Void){
-        if imagePathUrl.isEmpty{
-            print("no url image path or invalid url")
-            return
-        }
-        if let image = UIImage(contentsOfFile: imagePathUrl){
-            DispatchQueue.main.async {
-                completion(image)
+    
+    func getImageFromLocalStorage(_ imageName: String) -> AnyPublisher<UIImage, Error> {
+        Future<UIImage, Error> { promise in
+            
+            let filename = self.getDocumentDirectory()?.appendingPathComponent(imageName + ".jpg")
+            
+            do{
+                let data = try Data(contentsOf: filename!)
+                promise(.success(UIImage(data: data)!))
+            }catch{
+                promise(.failure(NSError(domain: "Image not found", code: 1, userInfo: nil)))
             }
-        }else{
-            completion(nil)
-        }
+        }.eraseToAnyPublisher()
     }
     
-    func saveFileLocally(image:UIImage, fileName:String){
-        print("saveFileLocally image typr", fileName + ".jpg")
+    
+    func saveImageLocally(image:UIImage, fileName:String){
         let fileManager = FileManager.default
-            let urls = fileManager.urls(for: .documentDirectory, in: .userDomainMask)
-            
+        let urls = fileManager.urls(for: .documentDirectory, in: .userDomainMask)
+        
         if let documentDirectory: URL = urls.first {
             let fileURL = documentDirectory.appendingPathComponent(fileName + ".jpg")
             if let imageData =   image.jpegData(compressionQuality: 0.6){
                 do {
-                    print("saveFileLocally write type", imageData)
-                try imageData.write(to: fileURL)
-                //                    print("returned fileURL after write success", fileURL)
-                //                    return fileURL
-            } catch {
-                print("Error writing data to file: \(error)")
+                    try imageData.write(to: fileURL)
+                    print("returned fileURL after write success", fileURL)
+                    
+                } catch {
+                    print("Error writing data to file: \(error)")
+                }
             }
         }
-            }
-//            return nil
     }
     
     
+    func readAnWriteImage( fileName:String, firebaseImageUrlPath:FireBaseImageUrlPath)->AnyPublisher<UIImage?, Error>{
+        Future<UIImage?, Error>{ [self] promise in
+        if fileExistingAtPath(path: fileName + ".jpg"){
+            getImageFromLocalStorage(fileName)
+                .sink { completion in
+                    switch completion{
+                    case .failure(_):
+                        print("error getting image from localFilePath")
+                    case .finished:
+                        break
+                    }
+                } receiveValue: { image in
+                    promise(.success(image))
+                }.store(in: &cancellables)
+            
+        }else{
+            FirebaseHelper.instance.downloadImage(firebaseImageUrl:firebaseImageUrlPath.rawValue, fileName: fileName)
+                .sink { completion in
+                    switch completion{
+                    case .failure(let error):
+                        print("error getting image from firebase")
+                        promise(.failure(error))
+
+                    case .finished:
+                        break
+                    }
+                } receiveValue: { image in
+                    promise(.success(image))
+                }.store(in: &cancellables)
+        }
+        
+        }.eraseToAnyPublisher()
     
-//    func saveFileLocally(fileData:NSData, fileName:String){
-//        let fileManager = FileManager.default
-//            let urls = fileManager.urls(for: .documentDirectory, in: .userDomainMask)
-//            
-//            if let documentDirectory: URL = urls.first {
-//                let fileURL = documentDirectory.appendingPathComponent(fileName)
-//                do {
-//                    try fileData.write(to: fileURL)
-////                    print("returned fileURL after write success", fileURL)
-////                    return fileURL
-//                } catch {
-//                    print("Error writing data to file: \(error)")
-//                }
-//            }
-////            return nil
-//    }
+    }
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
     
     
 }

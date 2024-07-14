@@ -7,7 +7,10 @@
 
 import SwiftUI
 struct MessageCellViewlLeft: View {
+    @StateObject private var messageViewModel: MessageViewModel = MessageViewModel()
+
     let message:RealmLocalMessage?
+    let membersId:[String]
     func fDate(_ date:Date) -> String{
         let formatter = DateFormatter()
         formatter.dateFormat = "h:mma"
@@ -15,10 +18,7 @@ struct MessageCellViewlLeft: View {
     }
     var body: some View {
         HStack(alignment: .bottom, spacing: 10) {
-            Image("profile")
-                .resizable()
-                .frame(width: 40, height: 40)
-                .clipShape(Circle())
+            CircularImage(image: messageViewModel.avatar, size: .extraSmall)
             
         VStack(alignment: .leading) {
 
@@ -33,7 +33,12 @@ struct MessageCellViewlLeft: View {
                 
                 
                 HStack {
-                    Image(systemName: "checkmark.circle")
+//                    if messageViewModel.isLoading{
+//                        Image(systemName: "checkmark.circle")
+//                    }else{
+//                        ProgressView()
+//                            .frame(width: 20, height: 20)
+//                    }
                     Text(fDate(message!.date))
                         .font(.caption)
                         .foregroundColor(.gray)
@@ -42,10 +47,12 @@ struct MessageCellViewlLeft: View {
            
             Spacer()
             
-        }
+        }.onAppear {
+            messageViewModel.getImage(membersId.filter{$0 != User.currentUserId}.first!, directory: .avatar)
+           }
     }
 }
 
 #Preview {
-    MessageCellViewlLeft(message: nil)
+    MessageCellViewlLeft(message: nil, membersId:["String"])
 }

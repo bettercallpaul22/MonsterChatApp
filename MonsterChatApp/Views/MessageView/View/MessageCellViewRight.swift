@@ -8,12 +8,13 @@
 import SwiftUI
 
 struct MessageCellViewRight: View {
+      
+     
     let message:RealmLocalMessage?
-    func fDate(_ date:Date) -> String{
-        let formatter = DateFormatter()
-        formatter.dateFormat = "h:mma"
-        return formatter.string(from: date)
-    }
+    let readStatus:Bool
+    @StateObject private var messageViewModel: MessageViewModel = MessageViewModel()
+
+   
     var body: some View {
         HStack(alignment: .bottom, spacing: 10) {
             Spacer()
@@ -29,21 +30,37 @@ struct MessageCellViewRight: View {
                 
                 
                 HStack {
-                    Text(fDate(message!.date))
+                    Text(customFormatter.fDate(message!.date))
                         .font(.caption)
                         .foregroundColor(.gray)
-                    Image(systemName: "checkmark.circle")
+                    if messageViewModel.isLoading{
+                        ProgressView()
+                            .frame(width: 20, height: 20)
+                    }else{
+                        Text(message!.status)
+                            .font(.caption)
+                            .foregroundColor(Color(.systemGray))
+//                        Image(systemName: "checkmark.circle")
+//                            .background(readStatus ? .green : .clear)
+//                            .clipShape(Circle())
+                    }
+                    
                 }
             }
-            Image("profile")
-                .resizable()
-                .frame(width: 40, height: 40)
-                .clipShape(Circle())
+            CircularImage(image: messageViewModel.avatar, size: .extraSmall)
+
+           
             
-        }
+        }.onAppear(perform: {
+            
+            if let senderId = message?.senderId{
+                messageViewModel.getImage(senderId,directory: .avatar)
+
+            }
+        })
     }
 }
 
 #Preview {
-    MessageCellViewRight(message: nil)
+    MessageCellViewRight(message: nil, readStatus: false)
 }

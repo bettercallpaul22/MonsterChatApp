@@ -26,7 +26,7 @@ struct UsersView: View {
                                 //
                                 Section{
                                     
-                                    NavigationLink(destination: ProfileView(user: user, avatar: userViewModel.userAvatar)) {
+                                    NavigationLink(destination: ProfileView(user: user, avatar: userViewModel.avatar)) {
                                         UserCell(user: user)
                                         
                                     }
