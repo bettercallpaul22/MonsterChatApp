@@ -10,6 +10,10 @@ import SwiftUI
 import RealmSwift
 import Combine
 
+enum UpdateRecentType:String{
+    case lastMessage
+    case clearUnreadCounter
+}
 
 
 class MessageViewModel:ObservableObject{
@@ -68,7 +72,7 @@ class MessageViewModel:ObservableObject{
  
     func updateMessageReadStatus(message:RealmLocalMessage, membersId:[String]){
         if message.senderId != User.currentUserId{
-            FirebaseMessageReference.instance.updateMessages( membersId: membersId, message: message)
+            FirebaseMessageReference.instance.updateMessagesReadStatus( membersId: membersId, message: message)
 
         }
     }
@@ -121,7 +125,7 @@ class MessageViewModel:ObservableObject{
     
    
     
-    func getAndUpdateRecentChat(chatRoomId:String, lastMessage:String){
+    func getAndUpdateRecentChat(chatRoomId:String, lastMessage:String?, updateTpye:UpdateRecentType){
     
         FirebaseChatReference.instance.firebaseRefrence(.Recent).whereField(mChatRoomId, isEqualTo: chatRoomId).getDocuments { snapshotQuery, error in
             guard let documents =  snapshotQuery?.documents else{
@@ -132,10 +136,21 @@ class MessageViewModel:ObservableObject{
             let allRecentChatDocuments = documents.compactMap { (doc) -> Chat? in
                return try? doc.data(as: Chat.self)
             }
-            
-            for recentChat in allRecentChatDocuments{
-                self.setupRecentWithLastMessage(recent: recentChat, lastmessage: lastMessage)
+            switch updateTpye {
+            case .lastMessage:
+                print("setupRecentWithLastMessage")
+
+                for recentChat in allRecentChatDocuments{
+                    self.setupRecentWithLastMessage(recent: recentChat, lastmessage: lastMessage ?? "")
+                }
+            case .clearUnreadCounter:
+                print("clearUnreadCounter")
+                for recentChat in allRecentChatDocuments{
+                    self.clearUnreadCounter(recent: recentChat)
+                }
             }
+            
+            
         }
 
        
@@ -151,6 +166,16 @@ class MessageViewModel:ObservableObject{
         
         FirebaseChatReference.instance.updateRecent(recentChat: recentChat, recentId: recent.id)
     }
+    
+    private func clearUnreadCounter(recent:Chat){
+         var recentChat = recent
+         recentChat.date = Date()
+         if recentChat.senderId == User.currentUserId{
+             recentChat.unreadCounter = 0
+         }
+         
+         FirebaseChatReference.instance.updateRecent(recentChat: recentChat, recentId: recent.id)
+     }
     
     
     
@@ -282,7 +307,7 @@ class MessageViewModel:ObservableObject{
 //                    print("is succes sending text message", self.isSuccess)
            
                     guard let lstMsg = self.lastMessageObj else {return}
-                    self.getAndUpdateRecentChat(chatRoomId: lstMsg.chatRoomId, lastMessage: lstMsg.message)
+                    self.getAndUpdateRecentChat(chatRoomId: lstMsg.chatRoomId, lastMessage: lstMsg.message, updateTpye: .lastMessage)
                 }.store(in: &cancellables)
             
         }

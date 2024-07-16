@@ -45,7 +45,7 @@ class FirebaseMessageReference {
     
     
     
-    func updateMessages(membersId:[String], message:RealmLocalMessage){
+    func updateMessagesReadStatus(membersId:[String], message:RealmLocalMessage){
         membersId.forEach { memberId in
             firebaseReference(.Messages).document(memberId).collection(message.chatRoomId).getDocuments { documentSnapshot, error in
                 guard let documents = documentSnapshot?.documents else{

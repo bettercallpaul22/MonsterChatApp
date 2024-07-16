@@ -86,7 +86,10 @@ struct MessageView: View {
                         }
                         .onChange(of: messageViewModel.lastMessageObj?.id, { oldvalue, newvalue  in
                             proxy.scrollTo(bottomID)
-                            
+                            if messageViewModel.userMessageViewState == "inMessageView"{
+                                messageViewModel.getAndUpdateRecentChat(chatRoomId:chatRoomId_, lastMessage: nil, updateTpye: .clearUnreadCounter)
+                            }
+                           
                         })
                     
             
@@ -215,7 +218,7 @@ struct MessageView: View {
             .sheet(isPresented: $showImagePicker, content: {
                 PhotoPicker(Image: $photo)
             })
-            .navigationTitle(username + messageViewModel.userMessageViewState)
+            .navigationTitle(username)
             .navigationBarTitleDisplayMode(.inline)
             .task {
                 chatViewModel.restartChat(chatRoomId: chatRoomId_, membersIds: membersId_)
@@ -228,6 +231,7 @@ struct MessageView: View {
                 messageViewModel.typingListener(chatRoomId_)
                 messageViewModel.messageViewListener(chatRoomId_)
                 messageViewModel.updateMessageViewState(state: "inMessageView", chatRoomId: chatRoomId_)
+                messageViewModel.getAndUpdateRecentChat(chatRoomId:chatRoomId_, lastMessage: nil, updateTpye: .clearUnreadCounter)
 //                print("chat id", chatId!)
             }
             .onDisappear {
