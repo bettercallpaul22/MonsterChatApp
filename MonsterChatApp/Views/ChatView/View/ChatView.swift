@@ -35,10 +35,8 @@ struct ChatView: View {
                                 NavigationLink(destination: MessageView(membersId_: chat.memberId, chatRoomId_: chat.chatRoomId, username: chat.receiverName, chatId: chat.id).toolbar(.hidden, for: .tabBar)) {
                                     ChatCellView(chat: chat)
                                         .onAppear{
-                                            
                                             chatViewModel.messageViewListener(chat.chatRoomId)
-
-                                            chatViewModel.updateChatViewState(state: "online", chatRoomId: chat.chatRoomId)
+//                                            chatViewModel.updateChatViewState(state: "offline", chatRoomId: chat.chatRoomId)
 
                                         }
                                        

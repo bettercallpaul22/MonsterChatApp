@@ -26,11 +26,17 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 struct MonsterChatApp: App {
     // register app delegate for Firebase setup
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
-    
+    @Environment(\.scenePhase) var scenePhase
+
     var body: some Scene {
         
         WindowGroup {
          ContentView()
+                .onChange(of: scenePhase) { _, newScenePhase in
+                                    if newScenePhase == .background {
+                                        print("app exit")
+                                    }
+                                }
             }
         }
         

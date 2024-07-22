@@ -232,6 +232,7 @@ class MessageViewModel:ObservableObject{
     
     
     func getMessages(chatRoomId: String){
+        print("messageView chat room id", chatRoomId)
         FirebaseMessageReference.instance.messageListener(userDocumentId: User.currentUserId!, chatRoomDocumentId: chatRoomId)
             .receive(on: DispatchQueue.main)
             .sink { completion in
@@ -241,6 +242,7 @@ class MessageViewModel:ObservableObject{
                 case .finished:
                     print("a new write")                }
             } receiveValue: {  newMessage in
+                print("particular chatroom messages", newMessage)
                 RealmManager.instance.saveToRealm(newMessage)
               
             }.store(in: &cancellables)

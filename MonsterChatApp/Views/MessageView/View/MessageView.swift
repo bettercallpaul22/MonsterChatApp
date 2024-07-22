@@ -24,6 +24,10 @@ struct MessageView: View {
     @StateObject private var messageViewModel: MessageViewModel = MessageViewModel()
     @StateObject private var chatViewModel: ChatViewModel = ChatViewModel()
     
+    var allMessages:[RealmLocalMessage]{
+        messageViewModel.realmMessages.filter { $0.chatRoomId == chatRoomId_}
+    }
+    
     private func sendMessage() {
         messageViewModel.senMessage(
             messageType: messageType,
@@ -43,7 +47,8 @@ struct MessageView: View {
             VStack {
                 ScrollViewReader { proxy in
                     ScrollView {
-                        ForEach(messageViewModel.realmMessages) { message in
+                        ForEach(allMessages) { message in
+                            
                             HStack {
                                 if message.senderId != User.currentUserId {
                                     if message.type == "text" {
@@ -148,8 +153,10 @@ struct MessageView: View {
                     
                 }
                 if !messageViewModel.userMessageViewState.isEmpty{
-                    Text(messageViewModel.userMessageViewState)
-                        .font(.caption)
+                    Text("online")
+
+//                    Text(messageViewModel.userMessageViewState)
+//                        .font(.caption)
                     
                 }
                 
@@ -230,12 +237,11 @@ struct MessageView: View {
             .onAppear{
                 messageViewModel.typingListener(chatRoomId_)
                 messageViewModel.messageViewListener(chatRoomId_)
-                messageViewModel.updateMessageViewState(state: "inMessageView", chatRoomId: chatRoomId_)
+                messageViewModel.updateMessageViewState(state: "online", chatRoomId: chatRoomId_)
                 messageViewModel.getAndUpdateRecentChat(chatRoomId:chatRoomId_, lastMessage: nil, updateTpye: .clearUnreadCounter)
-//                print("chat id", chatId!)
             }
             .onDisappear {
-                messageViewModel.updateMessageViewState(state: "online", chatRoomId: chatRoomId_)
+                messageViewModel.updateMessageViewState(state: "", chatRoomId: chatRoomId_)
 
             }
             

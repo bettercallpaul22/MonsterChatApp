@@ -108,6 +108,10 @@ class FirebaseMessageReference {
         
     }
     
+    func updatelisteneronExit(userId:String){
+//        firebaseReference(.MessageViewListener).w
+    }
+    
     func messageViewListener(_ chatroomId: String) -> AnyPublisher<String, Error> {
         let subject = PassthroughSubject<String, Error>()
         
@@ -138,7 +142,6 @@ class FirebaseMessageReference {
     }
     
     func updateMessageViewState(isOnViewState:String, chatroomId:String){
-        print("update the view state")
         firebaseReference(.MessageViewListener).document(chatroomId).updateData([User.currentUserId!: isOnViewState])
     }
     

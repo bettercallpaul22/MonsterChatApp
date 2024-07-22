@@ -79,7 +79,7 @@ class ChatViewModel:ObservableObject {
     
     
     func updateChatViewState(state:String, chatRoomId:String){
-        FirebaseMessageReference.instance.updateMessageViewState(isOnViewState: state, chatroomId: chatRoomId)
+//        FirebaseMessageReference.instance.updateMessageViewState(isOnViewState: state, chatroomId: chatRoomId)
     }
     
     func messageViewListener(_ chatRoomId:String){
